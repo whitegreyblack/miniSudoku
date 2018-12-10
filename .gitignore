@@ -1,0 +1,6 @@
+# python compiled folders
+__pycache__
+# currently opened vim files
+*.swp
+# pytest cache
+.cache/

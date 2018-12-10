@@ -1,0 +1,23 @@
+gamestate?
+
+should colors be a tile property or grid property?
+
+tile/cell
+  position
+  empty flag
+  number
+
+grid/map
+  1d array tiles/ 2d array tiles
+  filled -- orange
+  positions left -- red
+
+row/col/box checker
+  array of row/col/box tiles
+  unique numbers -- green
+  filled -- orange
+
+color class
+
+timer -- extra?
+randomizer -- later
