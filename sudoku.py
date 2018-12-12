@@ -212,6 +212,19 @@ class ListGrid:
         if not len(self.grid) == 81:
             raise ValueError("Grid does not have 81 elements. Aborting")
 
+    def possible_values(self, cell):
+        """
+        Returns values not located in the row, column, or block for input
+        cell index.
+        """
+        r, c, b, _ = cell
+        vals = set(j+1 for j in range(9))
+        vals -= set(self.row(r))
+        vals -= set(self.col(c))
+        vals -= set(self.block(b))
+        vals -= {0}
+        return vals
+
     @property
     def valid_board(self):
         """Determines if the board is in a valid state"""
