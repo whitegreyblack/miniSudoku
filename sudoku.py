@@ -75,11 +75,31 @@ def string_2_list(string):
 
 class Cell:
     """Object to hold the value player places in the given position"""
-    def __init__(self, row, col, box):
-        self.pos = (row, col, box)
-        self.val = None
-    def empty():
-        return self.val is 0 or self.val is None
+    def __init__(self, pos, value):
+        self.position = index
+        self.value_current, self.value_correct = value
+        if self.value_current == 0:
+            self.removable = True
+
+    @property
+    def empty(self):
+        return self.value != 0
+
+    @property
+    def value(self):
+        return self.value_current
+
+    @value.setter
+    def value(self, val):
+        self.value_current = val
+
+    @property
+    def correct(self):
+        return self.value_correct == self.value_current
+    
+    @property
+    def string_grid(self):
+        return self.value_current
 
 class Block:
     """
@@ -93,6 +113,13 @@ class Block:
                 for i in range(3)
                     for j in range(3)
         }
+
+class Board:
+    def __init__(self, grid):
+        self.data = ListGrid(grid)
+
+def flatten(array):
+    return [x for row in array for x in row]
 
 def shuffle(s: set) -> list:
     s = list(s)
@@ -156,10 +183,10 @@ def input_single() -> list:
     string = input("Board: ")
     if len(string) != 81:
         raise ValueError("input_single(): Invalid input")
-    strings = split_rows(string, 9)
+    strings = split_rows(string)
     return parse_rows(strings)
 
-def split_rows(array, l) -> list:
+def split_rows(array, l=9) -> list:
     if len(array) % l != 0:
         raise ValueError("split_rows(): Rows in list have different lengths")
     return [array[i:i+l] for i in range(0, len(array), l)]
@@ -196,6 +223,16 @@ class ListGrid:
     
     def __repr__(self):
         return self.board
+
+    def __eq__(self, other):
+        return self.grid == other.grid
+
+    def __hash__(self):
+        rows = split_rows(self.grid)
+        h = []
+        for row in rows:
+            h.append(hash(''.join(map(str, row))))
+        return hash(''.join(map(str, h)))
 
     def build_board(self) -> None:
         """Used to fill values on an empty board"""
