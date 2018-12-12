@@ -57,6 +57,16 @@ test_complete = [[3,6,9,1,2,4,5,8,7],
                  [4,5,6,2,7,3,1,9,8],
                  [8,3,1,4,9,6,7,5,2]]
 
+test_example = [[0,6,7,0,9,0,0,2,3],
+                [0,9,0,5,0,6,0,0,0],
+                [0,8,0,4,0,0,0,0,0],
+                [9,2,0,0,0,0,0,0,0],
+                [7,0,0,1,6,0,0,0,0],
+                [0,0,0,0,0,0,7,6,0],
+                [0,0,2,0,0,0,0,1,0],
+                [0,4,3,0,0,0,9,0,6],
+                [0,0,0,7,4,0,0,3,8]]
+
 def matrix_to_list(matrix):
     return itertools.chain.from_iterable(matrix)
 
@@ -129,18 +139,43 @@ def format_row(row):
     return " ".join(str(i) for i in row)
 
 def format_block(block: list) -> str:
-    b = []
     return "\n".join(" ".join(str(v) for v in block[i*3:i*3+3]) 
                                         for i in range(3))
+
+def parse_int_input(s) -> list:
+    try:
+        row = [int(v) for v in s]
+        return row
+    except:
+        raise
+
+def input_rows() -> list:
+    return [parse_input(input()) for r in range(9)]
+
+def input_single() -> list:
+    string = input("Board: ")
+    if len(string) != 81:
+        raise ValueError("input_single(): Invalid input")
+    strings = split_rows(string, 9)
+    return parse_rows(strings)
+
+def split_rows(array, l) -> list:
+    if len(array) % l != 0:
+        raise ValueError("split_rows(): Rows in list have different lengths")
+    return [array[i:i+l] for i in range(0, len(array), l)]
+
+def parse_rows(array: list) -> list:
+    return [parse_int_input(row) for row in array]
 
 # TODO: possibly subclass some class functions to other classes
 #       for now go ahead with the assumption of a 2D matrix
 #       The simplest implementation would be using a 1D list to
 #       represent the board with index methods to retrieve the
 #       correct cells within the list.
+# EDIT: List grid implements a 1D list.
 class ListGrid:
     """Holds a list that represents the board"""
-    def __init__(self, grid: list=None) -> None:
+    def __init__(self, grid: list=None, build: bool=True) -> None:
         """
         If no grid is given, will build a new list. If board is not valid
         on init, then the board will be filled until it is valid or an error
@@ -151,28 +186,25 @@ class ListGrid:
         if not self.grid:
             empty = True
             self.grid = [0 for _ in range(81)]
-        if not self.valid_board:
+        if not self.valid_board and build:
             self.cells = all_cells() if empty else remaining_cells(self.grid)
             if not self.build_board() and not empty:
                 raise ValueError("Given board was incorrect")
+
+    def __str__(self):
+        return self.board
+    
+    def __repr__(self):
+        return self.board
 
     def build_board(self) -> None:
         """Used to fill values on an empty board"""
         if (self.valid_board):
             return True
 
-        r, c, b, i = self.cells.pop(0)
-
-        vals = set(j+1 for j in range(9))
-
-        row = self.row(r)
-        vals -= set(row) - {0}
-
-        col = self.col(c)
-        vals -= set(col) - {0}
-        
-        blk = self.block(b)
-        vals -= set(blk) - {0}
+        cell = self.cells.pop(0)
+        i = cell[3]
+        vals = self.possible_values(cell)
 
         for v in shuffle(vals):
             self.grid[i] = v
@@ -183,10 +215,26 @@ class ListGrid:
             self.grid[i] = 0
 
         # no values fit. Put the cell back and try again.
-        self.cells.insert(0, (r,c,b,i))
+        self.cells.insert(0, cell)
         return False
 
-    def print_board(self, current_board=None) -> None:
+    @property
+    def board(self):
+        """Allows access of board representation as a string property"""
+        divider = "-" * 25
+        b = [divider]
+        for i in range(9):
+            r = []
+            for j in range(3):
+                s = i * 9 + j * 3
+                e = s + 3
+                r.append(' '.join(str(i) for i in self.grid[s:e]))
+            b.append(f"| {r[0]} | {r[1]} | {r[2]} |")
+            if (i + 1) % 3 == 0:
+                b.append(divider)
+        return "\n".join(b)
+
+    def print_board(self, current_board: list=None) -> None:
         """Outputs the grid to terminal with formatting"""
         b = current_board
         if not current_board:
@@ -314,6 +362,21 @@ class ListGrid:
         Returns a value indicating if all blocks in the grid are valid
         """
         return all(self.blocks_valid())
+
+    @classmethod
+    def from_input_rows_manual(cls) -> object:
+        """Builds a new ListGrid from valid user input"""
+        return cls(input_rows())
+
+    @classmethod
+    def from_input_once_single(cls) -> object:
+        """Builds a new ListGrid from valid user input"""
+        return cls(input_single())
+    
+    @classmethod
+    def from_input_once_multiple_rows(cls) -> object:
+        """Builds a new ListGrid from valid user input"""
+        return cls(input_multiple())
 
     @classmethod
     def from_matrix(cls, matrix: list) -> object:
