@@ -102,16 +102,13 @@ def remaining_cells(board: list):
     row, column, block and index number for each position in the grid
     that does not hold a valid value ie. 0
     """
-    q = [] # holds info for remaining cells
-    for i in range(9):
-        row = []
-        for j in range(9):
-            index = index_counter(i, j)
+    q = []
+    for row in range(9):
+        for col in range(9):
+            index = index_counter(row, col)
             if board[index] == 0:
-                r = i
-                c = j
-                b = block_counter(r, c)
-                row.append((r, c, b, index))
+                block = block_counter(row, col)
+                row.append((row, col, block, index))
         q += row if i % 2 == 0 else row[::-1]
     return q
 
@@ -121,11 +118,9 @@ def all_cells():
     board represented by a 1D list
     """
     q = [] # holds the indices in the order they will be accessed.
-    for i in range(9):
+    for r in range(9):
         row = []
-        for j in range(9):
-            r = i
-            c = j
+        for c in range(9):
             b = block_counter(r, c)
             index = index_counter(i, j)
             row.append((r, c, b, index))
@@ -497,20 +492,42 @@ class UIBoard:
     def __init__(self, grid):
         self.data = ListGrid(grid)
 
-class Grid:
+class MatrixGrid:
     """Holds 9 blocks and grid functions to determine if all 
     nine blocks are valid
     """
-    def __init__(self, grid=None):
+    def __init__(self, grid: list=None, build: bool=True) -> None:
+        """
+        If no grid is given, will build a new list. If board is not valid
+        on init, then the board will be filled until it is valid or an error
+        is thrown.
+        """
         self.grid = grid
-        # if no grid then use test case
+        empty = False
         if not self.grid:
-            self.grid = test_grid
-        self.blocks = {(i, j): Block(i, j) for i in range(3) for j in range(3)}
-    def __repr__(self):
-        return str(self.grid)
+            empty = True
+            self.grid = [0 for _ in range(81)]
+        if not self.valid_board and build:
+            if empty:
+                self.cells = all_cells()
+            else:
+                predicate = check_map_1d_position_empty
+                self.cells = remaining_cells(self.grid, predicate)
+            if not self.build_board() and not empty:
+                raise ValueError("Given board was incorrect")
+
+    @property
+    def valid_board(self):
+        """Determines if the board is in a valid state"""
+        self.check_grid()
+        r = self.all_rows_valid()
+        c = self.all_cols_valid()
+        b = self.all_blocks_valid()
+        return r and c and b
+
     def draw(self):
         pprint.pprint(self.grid)
+
     @classmethod
     def from_array(self, array):
         if len(array) != 81:
@@ -518,11 +535,14 @@ class Grid:
                 raise ValueError(array_incorrect_number_of_cells_fewer)
             raise ValueError(array_incorrect_number_of_cells_greater)
         return Grid([array[w:w+9] for w in range(0, len(array), 9)])
+
     def to_matrix(self):
         return
+
     @classmethod
     def from_json(self, dictionary):
         return Grid()
+
     def to_json(self):
         """
         With json, the board can be represented with all filled/given cells as
@@ -530,45 +550,31 @@ class Grid:
         considered as unfilled
         """
         return
+
+    def all_blocks_valid(self):
+        pass
+
     def block_valid(self):
         pass
+
     def row_valid(self):
         pass
+
     def col_valid(self):
         pass
 
 if __name__ == "__main__":
-    top="#---+---+---#---+---+---#---+---+---#"
-    div="############@###########@############"
-    box="#   |   |   #   |   |   #   |   |   #"
-    bot="#####################################"
-    ovr="+---+---+---+---+---+---+---+---+---+"
-    num="| 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |"
-    und="+---+---+---+---+---+---+---+---+---+"
-    print(bot)
-    print(box)
-    print(top)
-    print(box)
-    print(top)
-    print(box)
-    print(div)
-    print(box)
-    print(top)
-    print(box)
-    print(top)
-    print(box)
-    print(div)
-    print(box)
-    print(top)
-    print(box)
-    print(top)
-    print(box)
-    print(bot)
-    print(ovr)
-    print(num)
-    print(top)
-    print(len(top))
-    print(33-12)
+    reference = False
+    if reference:
+        lines = [
+            bot, box, top, box, top, box, div, box, top, box, top, 
+            box, div, box, top, box, top, box, bot, ovr, num, top
+        ]
 
-    grid = Grid()
-    grid.draw()
+        for line in lines:
+            print(line)
+
+    l = ListGrid.init_complete()
+    print(l)
+    l = ListGrid.init_incomplete()
+    print(l)
