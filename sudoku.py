@@ -73,53 +73,8 @@ def matrix_to_list(matrix):
 def string_2_list(string):
     return string.split()
 
-class Cell:
-    """Object to hold the value player places in the given position"""
-    def __init__(self, pos, value):
-        self.position = index
-        self.value_current, self.value_correct = value
-        if self.value_current == 0:
-            self.removable = True
-
-    @property
-    def empty(self):
-        return self.value != 0
-
-    @property
-    def value(self):
-        return self.value_current
-
-    @value.setter
-    def value(self, val):
-        self.value_current = val
-
-    @property
-    def correct(self):
-        return self.value_correct == self.value_current
-    
-    @property
-    def string_grid(self):
-        return self.value_current
-
-class Block:
-    """
-    Holds 9 cells and functions to determine if all nine
-    cells are valid
-    """
-    def __init__(self, row, col):
-        self.pos = (row, col)
-        self.cells = {
-            (i, j): Cell(i, j, self.pos[1] * 3 + self.pos[0]) 
-                for i in range(3)
-                    for j in range(3)
-        }
-
-class UIBoard:
-    """
-    The UI class representing the board.
-    """
-    def __init__(self, grid):
-        self.data = ListGrid(grid)
+index_counter = lambda i, j: i * 9 + j
+block_counter = lambda r, c: r // 3 * 3 + c // 3
 
 def flatten(array):
     """Converts a list of lists into a single list of x elements"""
@@ -141,7 +96,7 @@ def shuffle_pop(s: set) -> int:
     except IndexError:
         return 0
 
-def remaining_cells(board):
+def remaining_cells(board: list):
     """
     Iterates through a board represented by a 1D list and retrieves the
     row, column, block and index number for each position in the grid
@@ -151,11 +106,11 @@ def remaining_cells(board):
     for i in range(9):
         row = []
         for j in range(9):
-            index = i * 9 + j
+            index = index_counter(i, j)
             if board[index] == 0:
                 r = i
                 c = j
-                b = r // 3 * 3 + c // 3
+                b = block_counter(r, c)
                 row.append((r, c, b, index))
         q += row if i % 2 == 0 else row[::-1]
     return q
@@ -171,8 +126,9 @@ def all_cells():
         for j in range(9):
             r = i
             c = j
-            b = r // 3 * 3 + c // 3
-            row.append((r, c, b, i * 9 + j))
+            b = block_counter(r, c)
+            index = index_counter(i, j)
+            row.append((r, c, b, index))
         q += row if i % 2 == 0 else row[::-1]
     return q
 
@@ -199,7 +155,7 @@ def format_block(block: list) -> str:
     return "\n".join(" ".join(str(v) for v in block[i*3:i*3+3]) 
                                         for i in range(3))
 
-def parse_int_input(s) -> list:
+def parse_int_input(s: str) -> list:
     """
     Transforms '12345' -> [1, 2, 3, 4, 5]
     Raises errors on invalid input. Ex: '12a45' -> Error
@@ -230,7 +186,7 @@ def input_single() -> list:
     strings = split_rows(string)
     return parse_rows(strings)
 
-def split_rows(array, l=9) -> list:
+def split_rows(array:list, l:int=9) -> list:
     """
     Transforms a 1D list into a list of lists with every list holding l 
     elements. Error is raised if array has a length not divisible by l.
@@ -314,7 +270,7 @@ class ListGrid:
         for i in range(9):
             r = []
             for j in range(3):
-                s = i * 9 + j * 3
+                s = index_counter(i, j * 3)
                 e = s + 3
                 r.append(' '.join(str(i) for i in self.grid[s:e]))
             b.append(f"| {r[0]} | {r[1]} | {r[2]} |")
@@ -332,7 +288,7 @@ class ListGrid:
         for i in range(9):
             r = []
             for j in range(3):
-                s = i * 9 + j * 3
+                s = index_counter(i, j * 3)
                 e = s + 3
                 r.append(' '.join(str(i) for i in b[s:e]))
             print(f"| {r[0]} | {r[1]} | {r[2]} |")
@@ -354,7 +310,7 @@ class ListGrid:
         cell index.
         """
         r, c, b, _ = cell
-        vals = set(j+1 for j in range(9))
+        vals = set(j + 1 for j in range(9))
         vals -= set(self.row(r))
         vals -= set(self.col(c))
         vals -= set(self.block(b))
@@ -492,6 +448,54 @@ class ListGrid:
         Builds a new ListGrid with a grid that is impossible to complete. Used
         to test the ListGrid."""
         return cls.from_matrix(test_incorrect)
+
+class Cell:
+    """Object to hold the value player places in the given position"""
+    def __init__(self, pos, value):
+        self.position = index
+        self.value_current, self.value_correct = value
+        if self.value_current == 0:
+            self.removable = True
+
+    @property
+    def empty(self):
+        return self.value != 0
+
+    @property
+    def value(self):
+        return self.value_current
+
+    @value.setter
+    def value(self, val):
+        self.value_current = val
+
+    @property
+    def correct(self):
+        return self.value_correct == self.value_current
+    
+    @property
+    def string_grid(self):
+        return self.value_current
+
+class Block:
+    """
+    Holds 9 cells and functions to determine if all nine
+    cells are valid
+    """
+    def __init__(self, row, col):
+        self.pos = (row, col)
+        self.cells = {
+            (i, j): Cell(i, j, self.pos[1] * 3 + self.pos[0]) 
+                for i in range(3)
+                    for j in range(3)
+        }
+
+class UIBoard:
+    """
+    The UI class representing the board.
+    """
+    def __init__(self, grid):
+        self.data = ListGrid(grid)
 
 class Grid:
     """Holds 9 blocks and grid functions to determine if all 
