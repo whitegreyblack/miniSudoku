@@ -114,19 +114,27 @@ class Block:
                     for j in range(3)
         }
 
-class Board:
+class UIBoard:
+    """
+    The UI class representing the board.
+    """
     def __init__(self, grid):
         self.data = ListGrid(grid)
 
 def flatten(array):
+    """Converts a list of lists into a single list of x elements"""
     return [x for row in array for x in row]
 
 def shuffle(s: set) -> list:
+    """
+    Transforms the set into a list randomly shuffled
+    """
     s = list(s)
     random.shuffle(s)
     return s
 
 def shuffle_pop(s: set) -> int:
+    """After shuffling the input set, returns one value from the set"""
     s = shuffle(s)
     try:
         return s.pop()
@@ -134,6 +142,11 @@ def shuffle_pop(s: set) -> int:
         return 0
 
 def remaining_cells(board):
+    """
+    Iterates through a board represented by a 1D list and retrieves the
+    row, column, block and index number for each position in the grid
+    that does not hold a valid value ie. 0
+    """
     q = [] # holds info for remaining cells
     for i in range(9):
         row = []
@@ -148,6 +161,10 @@ def remaining_cells(board):
     return q
 
 def all_cells():
+    """
+    Retrieves the row, column, block and index number for each value on a
+    board represented by a 1D list
+    """
     q = [] # holds the indices in the order they will be accessed.
     for i in range(9):
         row = []
@@ -160,16 +177,33 @@ def all_cells():
     return q
 
 def format_col(col: list) -> str:
+    """
+    Transforms [1,2,3] -> 1,
+                          2,
+                          3
+    """
     return "\n".join(str(i) for i in col)
 
 def format_row(row):
+    """
+    Transforms [1, 2, 3] -> 1 2 3
+    """
     return " ".join(str(i) for i in row)
 
 def format_block(block: list) -> str:
+    """
+    Transforms [1, 2, 3, 4, 5, 6, 7, 8] -> 1 2 3
+                                           4 5 6
+                                           7 8 9
+    """
     return "\n".join(" ".join(str(v) for v in block[i*3:i*3+3]) 
                                         for i in range(3))
 
 def parse_int_input(s) -> list:
+    """
+    Transforms '12345' -> [1, 2, 3, 4, 5]
+    Raises errors on invalid input. Ex: '12a45' -> Error
+    """
     try:
         row = [int(v) for v in s]
         return row
@@ -177,9 +211,19 @@ def parse_int_input(s) -> list:
         raise
 
 def input_rows() -> list:
-    return [parse_input(input()) for r in range(9)]
+    """
+    Asks for user input on every row
+    Row 1: '...'
+    ...
+    Row 9: '...'
+    """
+    return [parse_input(input(f"Row {r + 1}: ")) for r in range(9)]
 
 def input_single() -> list:
+    """
+    Asks for user input on every value in grid
+    Board: '...' WHERE len('...') == 81
+    """
     string = input("Board: ")
     if len(string) != 81:
         raise ValueError("input_single(): Invalid input")
@@ -187,11 +231,18 @@ def input_single() -> list:
     return parse_rows(strings)
 
 def split_rows(array, l=9) -> list:
+    """
+    Transforms a 1D list into a list of lists with every list holding l 
+    elements. Error is raised if array has a length not divisible by l.
+    """
     if len(array) % l != 0:
         raise ValueError("split_rows(): Rows in list have different lengths")
     return [array[i:i+l] for i in range(0, len(array), l)]
 
 def parse_rows(array: list) -> list:
+    """
+    Transforms the element types within a list of lists from string to integer
+    """
     return [parse_int_input(row) for row in array]
 
 # TODO: possibly subclass some class functions to other classes
