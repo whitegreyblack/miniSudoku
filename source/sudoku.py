@@ -58,12 +58,61 @@ class Block:
                     for j in range(3)
         }
 
-class UIBoard:
-    """
-    The UI class representing the board.
-    """
-    def __init__(self, grid):
-        self.data = ListGrid(grid)
+class UIGrid(ListGrid):
+    @property
+    def board(self):
+        """View aka the front end."""
+        grid = ["=" * 55]
+        for row in range(27):
+            colstr = []
+            for col in range(9):
+                scol = []
+                for subcol in range(3):
+                    index = row // 3 * 9 + col
+                    subindex = row * 27 + col * 3 + subcol
+                    value = self.cell(index)
+                    block = row // 3 + subcol
+                    scol.append(str(value) if value == block else ' ')
+                colstr.append('|' + ''.join(scol) + '|')
+            grid.append('|' + '|'.join(colstr) + '|')
+            if (row + 1) % 9 == 0:
+                grid.append("=" * 55)
+            elif (row + 1) % 3 == 0:
+                grid.append("-" * 55)
+        return '\n'.join(grid)
+    @property
+    def index(self):
+        return self._i
+    @property
+    def index(self):
+        temp = self._i
+        self._i += i
+    def prev_col(self):
+        """Left"""
+        self.index -= 1
+    def next_col(self):
+        """Right"""
+        self.index += 1
+    def prev_row(self):
+        """Up"""
+        self.index -= 9
+    def next_row(self):
+        """Down"""
+        self.index += 9
+
+    # TODO: Unsure if these are needed. Basically calls previous 4 methods with one call
+    def prev_row_next_col(self):
+        """Top Left"""
+        pass
+    def prev_row_next_col(self):
+        """Top right"""
+        pass
+    def next_row_prev_col(self):
+        """Bot left"""
+        pass
+    def next_row_next_col(self):
+        """Bot right"""
+        pass
 
 if __name__ == "__main__":
     from listgrid import ListGrid
@@ -79,11 +128,16 @@ if __name__ == "__main__":
         for line in lines:
             print(line)
 
-    l = ListGrid.init_complete()
-    print(l)
-    m = MatrixGrid.init_complete()
-    print(m)
-    print(l == m)
+    grids = False
+    if grids:
+        l = ListGrid.init_complete()
+        print(l)
+        m = MatrixGrid.init_complete()
+        print(m)
+        print(l == m)
+
+    ui = UIGrid.init_complete()
+    print(ui)
     # l = ListGrid.init_incomplete()
     # print(l)
     # m = MatrixGrid.init_incomplete()

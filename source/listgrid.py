@@ -66,6 +66,10 @@ class ListGrid(BaseGrid):
         self.cells.insert(0, cell)
         return False
 
+    def cell(self, index: int) -> int:
+        print(index)
+        return self.grid[index]
+
     def row(self, row: int) -> list:
         """Returns the values of row with the given row number"""
         index_start = row * 9
