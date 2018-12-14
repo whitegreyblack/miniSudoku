@@ -4,9 +4,6 @@ import sudoku as s
 def test_helper_functions():
     pass
 
-def test_string_2_list():
-    assert s.string_2_list("a b c") == ['a', 'b', 'c']
-
 def test_init_incomplete_board():
     """
     Tests the ListGrid class method that uses from_matrix() to build the board

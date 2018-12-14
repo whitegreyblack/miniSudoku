@@ -12,6 +12,8 @@ Input array does not contain enough cells to fill board"""[1:]
 array_incorrect_number_of_cells_greater = """
 Input array contains more than number of cells on board"""[1:]
 
+# test grid with multiple values in the same row. 
+# Should raise errors on use
 test_incorrect = [[3,0,6,5,0,8,4,9,9],
                   [5,2,0,0,0,0,0,0,0],
                   [0,8,7,0,0,0,0,3,1],
@@ -22,6 +24,8 @@ test_incorrect = [[3,0,6,5,0,8,4,9,9],
                   [0,0,0,0,0,0,0,7,4],
                   [0,0,5,2,0,6,3,0,0]]
 
+# test grid with an incomplete grid. No multiples.
+# Should be filled in with no errors raised on use
 test_incomplete = [[3,0,6,5,0,8,4,0,0],
                    [5,2,0,0,0,0,0,0,0],
                    [0,8,7,0,0,0,0,3,1],
@@ -32,6 +36,8 @@ test_incomplete = [[3,0,6,5,0,8,4,0,0],
                    [0,0,0,0,0,0,0,7,4],
                    [0,0,5,2,0,6,3,0,0]]
 
+# test grid with values already completed.
+# Should be passed over by fill method but still validated without errors
 test_complete = [[3,6,9,1,2,4,5,8,7],
                  [7,2,8,6,5,9,3,1,4],
                  [1,4,5,7,3,8,2,6,9],
@@ -42,6 +48,7 @@ test_complete = [[3,6,9,1,2,4,5,8,7],
                  [4,5,6,2,7,3,1,9,8],
                  [8,3,1,4,9,6,7,5,2]]
 
+# Another test grid to use. Incomplete but can be filled without errors.
 test_example = [[0,6,7,0,9,0,0,2,3],
                 [0,9,0,5,0,6,0,0,0],
                 [0,8,0,4,0,0,0,0,0],
@@ -52,22 +59,25 @@ test_example = [[0,6,7,0,9,0,0,2,3],
                 [0,4,3,0,0,0,9,0,6],
                 [0,0,0,7,4,0,0,3,8]]
 
-def list_to_str(l: list, delim: str=""):
-    return hash(delim.join(map(str, l)))
-
-def matrix_to_array(matrix):
-    return list(itertools.chain.from_iterable(matrix))
-
-def array_to_matrix(array):
-    pass
-
-def string_2_list(string):
-    return string.split()
-
 index_counter = lambda i, j: i * 9 + j
 block_counter = lambda r, c: r // 3 * 3 + c // 3
 
-def flatten(array):
+def list_to_str(l: list, delim: str="") -> int:
+    return hash(delim.join(map(str, l)))
+
+def matrix_to_array(matrix: list) -> list:
+    return list(itertools.chain.from_iterable(matrix))
+
+def array_to_matrix(array: list) -> list:
+    return split_rows(array)
+
+def string_to_list(string: str) -> list:
+    return string.split()
+
+def int_to_list(string: str) -> list:
+    return [str(i) for i in string]
+
+def flatten(array: list):
     """Converts a list of lists into a single list of x elements"""
     return [x for row in array for x in row]
 
@@ -101,7 +111,7 @@ def print_board(current_board: list=None) -> None:
         if (i + 1) % 3 == 0:
             print(divider)
 
-def remaining_cells(board: list):
+def remaining_cells(board: list) -> list:
     """
     Iterates through a board represented by a 1D list and retrieves the
     row, column, block and index number for each position in the grid
@@ -118,7 +128,7 @@ def remaining_cells(board: list):
         q += row if r % 2 == 0 else row[::-1]
     return q
 
-def remaining_cells_2d(board: list):
+def remaining_cells_2d(board: list) -> list:
     """
     Iterates through a board represented by a 1D list and retrieves the
     row, column, block and index number for each position in the grid
@@ -134,7 +144,7 @@ def remaining_cells_2d(board: list):
         q += row if r % 2 == 0 else row[::-1]
     return q
 
-def all_cells():
+def all_cells() -> list:
     """
     Retrieves the row, column, block and index number for each value on a
     board represented by a 1D list
@@ -218,15 +228,12 @@ def parse_rows(array: list) -> list:
     """
     return [parse_int_input(row) for row in array]
 
-def limit_param_range(func):
-    print('a', func)
+def limit_param_range(func) -> list:
     functools.wraps(func)
     def wrapper_limit(arg):
-        print('b', arg)
         for a in arg[1]:
             if not 0 <= arg[1] < 9:
                 raise ValueError("""
 Function paramater out of range. Expected: 0-8. Got: {arg}"""[1:])
         return func(arg)
     return wrapper_limit
-
