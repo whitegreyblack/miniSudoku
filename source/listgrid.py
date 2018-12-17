@@ -67,7 +67,6 @@ class ListGrid(BaseGrid):
         return False
 
     def cell(self, index: int) -> int:
-        print(index)
         return self.grid[index]
 
     def row(self, row: int) -> list:
