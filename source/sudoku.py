@@ -116,16 +116,40 @@ class UIGrid(ListGrid):
         """Allows access of board representation as a string property"""
         divider = "+" + "-" * 23 + "+"
         b = [divider]
-        for i in range(9):
-            r = []
-            for j in range(3):
-                s = tool.index_counter(i, j * 3)
-                r.append(' '.join(str(i) if i > 0 else ' '
-                                    for i in self.grid[s:s+3]))
-            b.append(f"| {r[0]} | {r[1]} | {r[2]} |")
-            if (i + 1) % 3 == 0:
-                b.append(divider)
-        return "\n".join(b)
+        # for i in range(9):
+        #     r = []
+        #     for j in range(3):
+        #         s = tool.index_counter(i, j * 3)
+        #         r.append(' '.join(str(i) if i > 0 else ' '
+        #                             for i in self.grid[s:s+3]))
+        #     b.append(f"| {r[0]} | {r[1]} | {r[2]} |")
+        #     if (i + 1) % 3 == 0:
+        #         b.append(divider)
+        # return "\n".join(b)
+
+        # b = ["-" * 73]
+        # for i in range(3):
+        #     for k in range(3):
+        #         block = []
+        #         for j in range(3):
+        #                 c = []
+        #                 for l in range(3):
+        #                     # empty value
+        #                     if self.grid[i][j] == 0:
+        #                         c.append(" " * 7)
+        #                         continue
+        #                     val = self.grid[i][j]
+        #                     if val//3 == k:
+        #                         if val == 1:
+        #                             c.append(" 1     ")
+        #                         elif val == 2:
+        #                             c.append("   2   ")
+        #                         else:
+        #                             val == 2:
+        #                             c.append("     3 ")
+                        
+        #         break                                                            
+        return ""
 
     @property
     def index(self):
@@ -181,7 +205,7 @@ if __name__ == "__main__":
         print(m)
         print(l == m)
 
-    ui = UIGrid.init_complete()
+    ui = UIGrid.init_incomplete(build=False)
     print(ui)
     # l = ListGrid.init_incomplete()
     # print(l)

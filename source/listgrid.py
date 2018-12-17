@@ -126,12 +126,12 @@ class ListGrid(BaseGrid):
         return cls.from_matrix(tool.test_complete)
 
     @classmethod
-    def init_incomplete(cls) -> object:
+    def init_incomplete(cls, build=True) -> object:
         """
         Builds a new ListGrid with an incomplete grid passed in. Used to test
         the ListGrid.
         """
-        return cls.from_matrix(tool.test_incomplete)
+        return cls(tool.matrix_to_array(tool.test_incomplete), build=build)
 
     @classmethod
     def init_incorrect(cls) -> object:
