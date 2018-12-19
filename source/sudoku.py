@@ -90,34 +90,13 @@ class Block:
         }
 
 class UIGrid(ListGrid):
-    # @property
-    # def board(self):
-    #     """View aka the front end."""
-    #     grid = ["=" * 55]
-    #     for row in range(27):
-    #         colstr = []
-    #         for col in range(9):
-    #             scol = []
-    #             for subcol in range(3):
-    #                 index = row // 3 * 9 + col
-    #                 subindex = row * 27 + col * 3 + subcol
-    #                 value = self.cell(index)
-    #                 block = row // 3 + subcol
-    #                 scol.append(str(value) if value == block else ' ')
-    #             colstr.append('|' + ''.join(scol) + '|')
-    #         grid.append('|' + '|'.join(colstr) + '|')
-    #         if (row + 1) % 9 == 0:
-    #             grid.append("=" * 55)
-    #         elif (row + 1) % 3 == 0:
-    #             grid.append("-" * 55)
-    #     return '\n'.join(grid)
     @property
     def terminal(self) -> str:
         for by in range(3):
             for bx in range(3):
                 for y in range(3):
                     for x in range(3):
-                        val = self.grid[by*27+bx*9+y*3+x]
+                        val = self.grid[by*27+bx*3+y*9+x]
                         if val != 0:
                             rows = []
                             for col in range(3):
@@ -125,7 +104,7 @@ class UIGrid(ListGrid):
                                     rows.append(f"   [color=orange]{val}[/color]  ")
                                 else:
                                     rows.append(f" " * 7)
-                            yield bx*9+x, by*9+y,"\n".join(rows)
+                            yield bx*24+x*8+1, by*12+y*4+1, "\n".join(rows)
     @property
     def index(self):
         return self._i
@@ -191,8 +170,8 @@ if __name__ == "__main__":
 
     t.open()
     t.set("window.size=73x37, window.title='Sudoku'")
-    for i, j, s in list(ui.terminal):
-        t.puts(i, j, s)
+    # for i, j, s in list(ui.terminal):
+    #     t.puts(i, j, s)
     # for index, string in enumerate(list(ui.board)):
     #     i, j = index // 3, index % 3
     #     t.puts(i + i * 6, 0 + 8 * j, string)
@@ -273,5 +252,9 @@ if __name__ == "__main__":
     t.puts(48, 0, HEAVY_TBR)
     t.puts(24, 36, "\u2538")
     t.puts(48, 36, "\u2538")
+
+    for i, j, s in list(ui.terminal):
+        t.puts(i, j, s)
+
     t.refresh()
     c = t.read()
