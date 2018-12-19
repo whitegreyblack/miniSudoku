@@ -62,6 +62,17 @@ test_example = [[0,6,7,0,9,0,0,2,3],
 index_counter = lambda i, j: i * 9 + j
 block_counter = lambda r, c: r // 3 * 3 + c // 3
 
+def check_range(x, s=0, e=3):
+    return s < x < e
+
+def check_ranges(l):
+    return all(check_range(i) for i in l)
+
+def index_from_block_iter(x, y, bx, by):
+    if all(check_ranges((x, y, bx, by))):
+        return by*27+bx*9+y*3+x
+    raise ValueError
+
 def list_to_str(l: list, delim: str="") -> int:
     return hash(delim.join(map(str, l)))
 

@@ -112,45 +112,20 @@ class UIGrid(ListGrid):
     #             grid.append("-" * 55)
     #     return '\n'.join(grid)
     @property
-    def board(self) -> str:
-        """Allows access of board representation as a string property"""
-        divider = "+" + "-" * 23 + "+"
-        b = [divider]
-        # for i in range(9):
-        #     r = []
-        #     for j in range(3):
-        #         s = tool.index_counter(i, j * 3)
-        #         r.append(' '.join(str(i) if i > 0 else ' '
-        #                             for i in self.grid[s:s+3]))
-        #     b.append(f"| {r[0]} | {r[1]} | {r[2]} |")
-        #     if (i + 1) % 3 == 0:
-        #         b.append(divider)
-        # return "\n".join(b)
-
-        # b = ["-" * 73]
-        # for i in range(3):
-        #     for k in range(3):
-        #         block = []
-        #         for j in range(3):
-        #                 c = []
-        #                 for l in range(3):
-        #                     # empty value
-        #                     if self.grid[i][j] == 0:
-        #                         c.append(" " * 7)
-        #                         continue
-        #                     val = self.grid[i][j]
-        #                     if val//3 == k:
-        #                         if val == 1:
-        #                             c.append(" 1     ")
-        #                         elif val == 2:
-        #                             c.append("   2   ")
-        #                         else:
-        #                             val == 2:
-        #                             c.append("     3 ")
-                        
-        #         break                                                            
-        return ""
-
+    def terminal(self) -> str:
+        for by in range(3):
+            for bx in range(3):
+                for y in range(3):
+                    for x in range(3):
+                        val = self.grid[by*27+bx*9+y*3+x]
+                        if val != 0:
+                            rows = []
+                            for col in range(3):
+                                if col == 1:
+                                    rows.append(f"   [color=orange]{val}[/color]  ")
+                                else:
+                                    rows.append(f" " * 7)
+                            yield bx*9+x, by*9+y,"\n".join(rows)
     @property
     def index(self):
         return self._i
@@ -216,15 +191,20 @@ if __name__ == "__main__":
 
     t.open()
     t.set("window.size=73x37, window.title='Sudoku'")
-    t.puts(0, 0, ui.board)
-    t.puts(24, 0, ui.board)
-    t.puts(48, 0, ui.board)
-    t.puts(0, 12, ui.board)
-    t.puts(24, 12, ui.board)
-    t.puts(48, 12, ui.board)
-    t.puts(0, 24, ui.board)
-    t.puts(24, 24, ui.board)
-    t.puts(48, 24, ui.board)
+    for i, j, s in list(ui.terminal):
+        t.puts(i, j, s)
+    # for index, string in enumerate(list(ui.board)):
+    #     i, j = index // 3, index % 3
+    #     t.puts(i + i * 6, 0 + 8 * j, string)
+    # t.puts(1, 0, ui.board)
+    # t.puts(24, 0, ui.board)
+    # t.puts(48, 0, ui.board)
+    # t.puts(0, 12, ui.board)
+    # t.puts(24, 12, ui.board)
+    # t.puts(48, 12, ui.board)
+    # t.puts(0, 24, ui.board)
+    # t.puts(24, 24, ui.board)
+    # t.puts(48, 24, ui.board)
 
     # for i in range(0, 74, 8):
     #     print(i)
@@ -252,26 +232,27 @@ if __name__ == "__main__":
     t.puts(72, 36, HEAVY_BRC)
 
     # goes down from 0 -> y
-    for i in range(1, 36):
-        t.puts(0, i, HEAVY_VBAR)
-        t.puts(8, i, LIGHT_VBAR)
-        t.puts(16, i, LIGHT_VBAR)
-        t.puts(24, i, HEAVY_VBAR)
-        t.puts(32, i, LIGHT_VBAR)
-        t.puts(40, i, LIGHT_VBAR)
-        t.puts(48, i, HEAVY_VBAR)
-        t.puts(56, i, LIGHT_VBAR)
-        t.puts(64, i, LIGHT_VBAR)
-        t.puts(72, i, HEAVY_VBAR)
-        if i % 12 == 0:
-            t.puts(0, i, HEAVY_ABR)
-            t.puts(72, i, HEAVY_EBR)
+    for y in range(1, 36):
+        t.puts(0, y, HEAVY_VBAR)
+        t.puts(8, y, LIGHT_VBAR)
+        t.puts(16, y, LIGHT_VBAR)
+        t.puts(24, y, HEAVY_VBAR)
+        t.puts(32, y, LIGHT_VBAR)
+        t.puts(40, y, LIGHT_VBAR)
+        t.puts(48, y, HEAVY_VBAR)
+        t.puts(56, y, LIGHT_VBAR)
+        t.puts(64, y, LIGHT_VBAR)
+        t.puts(72, y, HEAVY_VBAR)
+        if y % 12 == 0:
+            t.puts(0, y, HEAVY_ABR)
+            t.puts(72, y, HEAVY_EBR)
 
-    for i in range(0, 37, 4):
+    # horizontal bars
+    for x in range(0, 37, 4):
         symbols = LIGHT_HBAR * 71
-        if i % 12 == 0:
+        if x % 12 == 0:
             symbols = HEAVY_HBAR * 71
-        t.puts(1, i, symbols)
+        t.puts(1, x, symbols)
 
     for x in (24, 48):
         for y in range(4, 33, 4):
@@ -290,6 +271,7 @@ if __name__ == "__main__":
     # t.puts(8, 0, HLIGHT_TBR)
     t.puts(24, 0, HEAVY_TBR)
     t.puts(48, 0, HEAVY_TBR)
-
+    t.puts(24, 36, "\u2538")
+    t.puts(48, 36, "\u2538")
     t.refresh()
     c = t.read()
