@@ -155,9 +155,11 @@ class UIGrid(ListGrid):
             for bx in range(3):
                 for y in range(3):
                     for x in range(3):
-                        val = self.grid[by*27+bx*3+y*9+x] # access by grid index
+                        # access by grid index
+                        val = self.grid[by*27+bx*3+y*9+x]
                         if val != 0:
-                            yield bx*8+x*2+2, by*4+y*1+1, str(val) # access by row, col, block
+                            # access by row, col, block
+                            yield bx*8+x*2+2, by*4+y*1+1, str(val)
 
     @property
     def values_small_board(self) -> str:
@@ -165,9 +167,12 @@ class UIGrid(ListGrid):
             for bx in range(3):
                 for y in range(3):
                     for x in range(3):
-                        val = self.grid[by*27+bx*3+y*9+x] # access by grid index
+                        # access by grid index
+                        index = by * 27 + bx * 3 + y * 9 + x
+                        val = self.grid[index]
                         if val != 0:
-                            yield bx*8+x*2+1, by*4+y*1+1, str(val) # access by row, col, block
+                            # access by row, col, block
+                            yield bx*8+x*2+1, by*4+y*1+1, str(val)
     
     @property
     def border_tiny_board(self) -> str:
@@ -187,7 +192,8 @@ class UIGrid(ListGrid):
             for bx in range(3):
                 for y in range(3):
                     for x in range(3):
-                        val = self.grid[by*27+bx*3+y*9+x]
+                        index = by * 27 + bx * 3 + y * 9 + x
+                        val = self.grid[index]
                         if val != 0:
                             rows = []
                             for col in range(3):
